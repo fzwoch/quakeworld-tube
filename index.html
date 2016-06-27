@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>QuakeWorld Tube</title>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r78/build/three.min.js"></script>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r78/examples/js/loaders/MTLLoader.js"></script>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r78/examples/js/loaders/OBJLoader.js"></script>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r78/examples/js/libs/stats.min.js"></script>
+		<script src="quakeworld-tube.js"></script>
+		<style>
+			* {
+				margin: 0px;
+				overflow: hidden;
+			}
+			#stats {
+				position: absolute;
+				top:0;
+				left: 0
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			qwtube_init();
+			var stats = new Stats();
+			document.body.appendChild(stats.domElement);
+			stats.update();
+		</script>
+	</body>
+</html>
