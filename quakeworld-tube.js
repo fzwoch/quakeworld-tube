@@ -67,11 +67,8 @@ function qwtube_lerp_entities()
 		if (object.position_curr.distanceTo(object.position_prev) < 200) {
 			object.position.lerpVectors(object.position_prev, object.position_curr, fac);
 
-			var prev = new THREE.Quaternion();
-			var curr = new THREE.Quaternion();
-
-			prev.setFromEuler(object.rotation_prev);
-			curr.setFromEuler(object.rotation_curr);
+			var prev = new THREE.Quaternion().setFromEuler(object.rotation_prev);
+			var curr = new THREE.Quaternion().setFromEuler(object.rotation_curr);
 
 			THREE.Quaternion.slerp(prev, curr, object.quaternion, fac);
 		} else {
@@ -132,7 +129,7 @@ function qwtube_render(time) {
 		camera.rotation.set(
 			camera.offset.x - camera.intermission.rotation.x + 0.10 * Math.sin(render_time * 0.0005),
 			camera.offset.y + camera.intermission.rotation.y + 0.05 * Math.sin(render_time * 0.0001),
-			camera.offset.z + camera.intermission.rotation.z + 0.10 * Math.sin(render_time * 0.001));
+			camera.offset.z + camera.intermission.rotation.z + 0.10 * Math.sin(render_time * 0.0010));
 	} else {
 		camera.position.copy(entities[1].position);
 		camera.rotation.set(
@@ -237,6 +234,19 @@ function qwtube_load_sound(sound_name) {
 }
 
 function qwtube_load_mvd(url) {
+	var req = new XMLHttpRequest();
+	req.open("GET", url);
+	req.responseType = "arraybuffer";
+	req.onload = function(event) {
+		mvd = new DataView(req.response);
+		mvd.size = req.response.byteLength;
+		mvd.offset = 0;
+		mvd.msg_size = 0;
+		console.log("mvd loaded: " + mvd.size + " bytes");
+		setTimeout(qwtube_parse_mvd());
+	};
+	req.send();
+	return; // below is cooler fetch API; waiting for universal browser support
 	fetch(url).then(function(response) {
 		var reader = response.body.getReader();
 		var buf = new Uint8Array(response.headers.get("content-length"));
