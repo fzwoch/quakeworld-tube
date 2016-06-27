@@ -122,9 +122,7 @@ function qwtube_render(time) {
 		return;
 
 	if (render_time >= mvd_time_curr)
-	{
 		qwtube_parse_mvd();
-	}
 
 	qwtube_lerp_entities();
 	qwtube_hover_entities();
@@ -132,9 +130,9 @@ function qwtube_render(time) {
 	if (camera.intermission) {
 		camera.position.copy(camera.intermission.position);
 		camera.rotation.set(
-			Math.PI/2 - camera.intermission.rotation.x + 0.1 * Math.sin(render_time * 0.0005),
-			camera.intermission.rotation.y + 0.05 * Math.sin(render_time * 0.0001),
-			-Math.PI/2 + camera.intermission.rotation.z + 0.1 * Math.sin(render_time * 0.001));
+			camera.offset.x - camera.intermission.rotation.x + 0.10 * Math.sin(render_time * 0.0005),
+			camera.offset.y + camera.intermission.rotation.y + 0.05 * Math.sin(render_time * 0.0001),
+			camera.offset.z + camera.intermission.rotation.z + 0.10 * Math.sin(render_time * 0.001));
 	} else {
 		camera.position.copy(entities[1].position);
 		camera.rotation.set(
@@ -268,7 +266,6 @@ function flush_string() {
 	while (mvd.getUint8(mvd.offset) != 0) {
 		var val = mvd.getUint8(mvd.offset);
 
-		/* converts all funky colored characters to plain ASCII text */
 		if (val >= 18 && val <= 27) {
 			val += 30;
 		} else if (val >= 146 && val <= 155) {
@@ -779,12 +776,12 @@ function qwtube_parse_mvd() {
 				mvd.offset += 2;
 				mvd.msg_size -= 2;
 
-				camera.intermission.rotation.x = Math.PI / 2 - (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
+				camera.intermission.rotation.x = (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
 				
 				mvd.offset++;
 				mvd.msg_size--;
 
-				camera.intermission.rotation.z = -Math.PI / 2 + (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
+				camera.intermission.rotation.z = (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
 
 				mvd.offset++;
 				mvd.msg_size--;
