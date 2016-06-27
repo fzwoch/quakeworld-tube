@@ -130,10 +130,11 @@ function qwtube_render(time) {
 	qwtube_hover_entities();
 
 	if (camera.intermission) {
-			camera.rotation.set(
-				Math.PI/2 - camera.intermission.x + 0.1 * Math.sin(render_time * 0.0005),
-				camera.intermission.y + 0.05 * Math.sin(render_time * 0.0001),
-				-Math.PI/2 + camera.intermission.z + 0.1 * Math.sin(render_time * 0.001));
+		camera.position.copy(camera.intermission.position);
+		camera.rotation.set(
+			Math.PI/2 - camera.intermission.rotation.x + 0.1 * Math.sin(render_time * 0.0005),
+			camera.intermission.rotation.y + 0.05 * Math.sin(render_time * 0.0001),
+			-Math.PI/2 + camera.intermission.rotation.z + 0.1 * Math.sin(render_time * 0.001));
 	} else {
 		camera.position.copy(entities[1].position);
 		camera.rotation.set(
@@ -761,34 +762,34 @@ function qwtube_parse_mvd() {
 				}
 				break;
 			case SVC_INTERMISSION:
-				camera.intermission = new THREE.Euler();
+				camera.intermission = { position: new THREE.Vector3(), rotation: new THREE.Euler() };
 
-				camera.position.x = mvd.getInt16(mvd.offset, true) / 8;
-
-				mvd.offset += 2;
-				mvd.msg_size -= 2;
-
-				camera.position.y = mvd.getInt16(mvd.offset, true) / 8;
+				camera.intermission.position.x = mvd.getInt16(mvd.offset, true) / 8;
 
 				mvd.offset += 2;
 				mvd.msg_size -= 2;
 
-				camera.position.z = mvd.getInt16(mvd.offset, true) / 8;
+				camera.intermission.position.y = mvd.getInt16(mvd.offset, true) / 8;
 
 				mvd.offset += 2;
 				mvd.msg_size -= 2;
 
-				camera.intermission.x = Math.PI / 2 - (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
+				camera.intermission.position.z = mvd.getInt16(mvd.offset, true) / 8;
+
+				mvd.offset += 2;
+				mvd.msg_size -= 2;
+
+				camera.intermission.rotation.x = Math.PI / 2 - (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
 				
 				mvd.offset++;
 				mvd.msg_size--;
 
-				camera.intermission.z = -Math.PI / 2 + (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
+				camera.intermission.rotation.z = -Math.PI / 2 + (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
 
 				mvd.offset++;
 				mvd.msg_size--;
 
-				camera.intermission.y = (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
+				camera.intermission.rotation.y = (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
 
 				mvd.offset++;
 				mvd.msg_size--;
