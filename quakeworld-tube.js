@@ -115,12 +115,17 @@ function qwtube_hover_entities() {
 }
 
 function qwtube_switch_player() {
-	while (true) {
-		player_id++;
-		if (player_id >= entities.length)
-			player_id = 0;
-		if (entities[player_id] && entities[player_id].is_player)
-			break;
+	for (var i = player_id + 1; i < entities.length; i++) {
+		if (entities[i] && entities[i].is_player) {
+			player_id = i;
+			return;
+		}
+	}
+	for (var i = 0; i < player_id; i++) {
+		if (entities[i] && entities[i].is_player) {
+			player_id = i;
+			return;
+		}
 	}
 }
 
