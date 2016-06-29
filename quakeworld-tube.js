@@ -27,9 +27,18 @@ var load_count;
 function qwtube_init() {
 	THREE.Euler.DefaultOrder = "ZXY"; // FIXME?
 
+	renderer = new THREE.WebGLRenderer({antialias: true});
+
+	document.body.appendChild(renderer.domElement);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	window.addEventListener("resize", qwtube_resize);
+	window.addEventListener("click", qwtube_switch_player);
+}
+
+function qwtube_play(url) {
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-	renderer = new THREE.WebGLRenderer({antialias: true});
 	listener = new THREE.AudioListener();
 
 	scene.add(new THREE.AmbientLight(0xffffff));
@@ -37,12 +46,6 @@ function qwtube_init() {
 	camera.up = new THREE.Vector3(0, 0, 1);
 	camera.lookAt(new THREE.Vector3(1, 0, 0));
 	camera.offset = new THREE.Euler().copy(camera.rotation);
-
-	document.body.appendChild(renderer.domElement);
-	renderer.setSize(window.innerWidth, window.innerHeight);
-
-	window.addEventListener("resize", qwtube_resize);
-	window.addEventListener("click", qwtube_switch_player);
 
 	model_list = [];
 	sound_list = [];
@@ -52,7 +55,7 @@ function qwtube_init() {
 
 	player_id = -1;
 
-	qwtube_load_mvd("/dm4.mvd");
+	qwtube_load_mvd(url);
 }
 
 function qwtube_resize() {
