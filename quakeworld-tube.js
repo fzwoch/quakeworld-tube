@@ -107,7 +107,7 @@ function qwtube_hover_entities() {
 			case "suit.obj":
 			case "w_g_key.obj":
 			case "w_s_key.obj":
-				object.rotation.z += Math.PI / 2 + render_time * 0.002;
+				object.rotation.z += render_time * 0.002;
 				object.position.z += 5 * Math.sin(render_time * 0.004);
 			default:
 		}
@@ -813,7 +813,7 @@ function qwtube_parse_mvd() {
 				mvd.msg_size -= 2;
 
 				camera.intermission.rotation.x = (360 * mvd.getUint8(mvd.offset) / 256) * Math.PI / 180;
-				
+
 				mvd.offset++;
 				mvd.msg_size--;
 
