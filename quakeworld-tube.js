@@ -35,8 +35,7 @@ function qwtube_init() {
 
 	camera.up = new THREE.Vector3(0, 0, 1);
 	camera.lookAt(new THREE.Vector3(1, 0, 0));
-	camera.offset = new THREE.Euler();
-	camera.offset.copy(camera.rotation);
+	camera.offset = new THREE.Euler().copy(camera.rotation);
 
 	document.body.appendChild(renderer.domElement);
 	renderer.setSize(window.innerWidth, window.innerHeight);
@@ -230,6 +229,9 @@ function qwtube_load_sound(sound_name) {
 		load_count--;
 		console.log("sound loaded: " + sound.name);
 	});
+	// safari suspends the audio context by default
+	if (sound.context.state == "suspended")
+		sound.context.resume();
 	return sound;
 }
 
