@@ -18,6 +18,7 @@ var mvd_time_curr = 0;
 var mvd_time_prev = 0;
 var render_time = 0;
 var render_time_offset = -1;
+var player_id;
 
 // used to synchronize async loads
 // easiest way to keep things in order
@@ -41,12 +42,15 @@ function qwtube_init() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
 	window.addEventListener("resize", qwtube_resize);
+	window.addEventListener("click", qwtube_switch_player);
 
 	model_list = [];
 	sound_list = [];
 	sound_events = [];
 	baseline = [];
 	entities = [];
+
+	player_id = -1;
 
 	qwtube_load_mvd("/dm4.mvd");
 }
@@ -107,6 +111,16 @@ function qwtube_hover_entities() {
 	});
 }
 
+function qwtube_switch_player() {
+	while (true) {
+		player_id++;
+		if (player_id >= entities.length)
+			player_id = 0;
+		if (entities[player_id] && entities[player_id].is_player)
+			break;
+	}
+}
+
 function qwtube_render(time) {
 	requestAnimationFrame(qwtube_render);
 
@@ -123,6 +137,9 @@ function qwtube_render(time) {
 	qwtube_lerp_entities();
 	qwtube_hover_entities();
 
+	if (!entities[player_id])
+		qwtube_switch_player();
+
 	if (camera.intermission) {
 		camera.position.copy(camera.intermission.position);
 		camera.rotation.set(
@@ -130,11 +147,11 @@ function qwtube_render(time) {
 			camera.offset.y + camera.intermission.rotation.y + 0.05 * Math.sin(render_time * 0.0001),
 			camera.offset.z + camera.intermission.rotation.z + 0.10 * Math.sin(render_time * 0.0010));
 	} else {
-		camera.position.copy(entities[1].position);
+		camera.position.copy(entities[player_id].position);
 		camera.rotation.set(
-			camera.offset.x - entities[1].rotation.x,
-			camera.offset.y + entities[1].rotation.y,
-			camera.offset.z + entities[1].rotation.z);
+			camera.offset.x - entities[player_id].rotation.x,
+			camera.offset.y + entities[player_id].rotation.y,
+			camera.offset.z + entities[player_id].rotation.z);
 	}
 	camera.position.z += 20;
 
@@ -882,6 +899,7 @@ function qwtube_parse_mvd() {
 				
 				if (baseline[id].name.length > 0 && baseline[id].spec == 0) {
 					scene.add(entities[id]);
+					entities[id].is_player = true;
 				}
 				break;
 			case SVC_DOWNLOAD:
