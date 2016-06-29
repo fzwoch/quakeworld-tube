@@ -639,21 +639,19 @@ function qwtube_parse_mvd() {
 				mvd.offset++;
 				mvd.msg_size--;
 
-				if (id == 0) {
-					baseline[id] = model_list[tmp];
-					scene.add(model_list[tmp]);
-				} else {
-					baseline[id] = model_list[tmp].clone();
-				}
-
 				mvd.offset += 2;
 				mvd.msg_size -= 2;
 
 				var skin = mvd.getUint8(mvd.offset);
 
-				if (baseline[id].name == "armor.obj") {
-					baseline[id] = baseline[id].children[skin].clone();
+				if (id == 0) {
+					baseline[id] = model_list[tmp];
+					scene.add(model_list[tmp]);
+				} else if (model_list[tmp].name == "armor.obj") {
+					baseline[id] = model_list[tmp].children[skin].clone();
 					baseline[id].name = "armor.obj";
+				} else {
+					baseline[id] = model_list[tmp].clone();
 				}
 
 				mvd.offset++;
