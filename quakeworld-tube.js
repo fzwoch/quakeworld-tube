@@ -157,7 +157,7 @@ function qwtube_render(time) {
 
 	renderer.render(scene, camera);
 
-	while (sound_events && sound_events.length && render_time >= sound_events[0].time ) {
+	while (sound_events.length && render_time >= sound_events[0].time) {
 		sound = sound_events.pop();
 		if (sound_list[sound.id].isPlaying == true) {
 				sound_list[sound.id].stop();
@@ -198,8 +198,7 @@ function qwtube_load_model(model_name) {
 	var mtl_name = model_name;
 	var model = new THREE.Group();
 
-	switch (model_name) // FIXME: missing assets
-	{
+	switch (model_name) {
 		case "s_bubble":
 		case "s_explod":
 		case "wizard":
@@ -210,6 +209,15 @@ function qwtube_load_model(model_name) {
 			return model;
 		default:
 			break;
+	}
+
+	if (model_name == "armor") {
+		load_count += 2;
+		model.add(qwtube_load_model("armor_0"));
+		model.add(qwtube_load_model("armor_1"));
+		model.add(qwtube_load_model("armor_2"));
+		model.name = model_name + ".obj";
+		return model;
 	}
 
 	if (model_name.startsWith("v_")) {
@@ -642,14 +650,12 @@ function qwtube_parse_mvd() {
 				mvd.msg_size -= 2;
 
 				var skin = mvd.getUint8(mvd.offset);
-/*
-				if (baseline[id].name == "armor") {
-					for (var i = 0; i < 3; i++) {
-						if (baseline[id].children[i].material.name != "armor_" + skin + ".jpg")
-							delete baseline[id].children[i];
-					}
+
+				if (baseline[id].name == "armor.obj") {
+					baseline[id] = baseline[id].children[skin].clone();
+					baseline[id].name = "armor.obj";
 				}
-*/
+
 				mvd.offset++;
 				mvd.msg_size--;
 
