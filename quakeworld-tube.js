@@ -831,6 +831,12 @@ function qwtube_parse_mvd() {
 
 				mvd.offset++;
 				mvd.msg_size--;
+
+				entities.forEach(function(object) {
+					if (object.is_player)
+						scene.remove(object);
+				});
+
 				break;
 			case SVC_FINALE:
 				break;
