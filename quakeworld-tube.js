@@ -117,13 +117,19 @@ function qwtube_hover_entities() {
 function qwtube_switch_player() {
 	for (var i = player_id + 1; i < entities.length; i++) {
 		if (entities[i] && entities[i].is_player) {
+			if (player_id >= 0 && entities[player_id])
+				scene.add(entities[player_id]);
 			player_id = i;
+			scene.remove(entities[player_id]);
 			return;
 		}
 	}
 	for (var i = 0; i < player_id; i++) {
 		if (entities[i] && entities[i].is_player) {
+			if (player_id >= 0 && entities[player_id])
+				scene.add(entities[player_id]);
 			player_id = i;
+			scene.remove(entities[player_id]);
 			return;
 		}
 	}
