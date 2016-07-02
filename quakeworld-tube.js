@@ -1094,7 +1094,10 @@ function qwtube_parse_mvd() {
 					if (!entities[id] && baseline[id]) {
 						fix_lerp = 1;
 
-						entities[id] = baseline[id].clone();
+						if (baseline[id].children.length > 1)
+							entities[id] = baseline[id].children[0].clone();
+						else
+							entities[id] = baseline[id].clone();
 
 						entities[id].position_curr = new THREE.Vector3();
 						entities[id].rotation_curr = new THREE.Euler();
@@ -1133,7 +1136,10 @@ function qwtube_parse_mvd() {
 
 						fix_lerp = 1;						
 
-						entities[id] = model_list[idx].clone();
+						if (model_list[idx].children.length > 1)
+							entities[id] = model_list[idx].children[0].clone();
+						else
+							entities[id] = model_list[idx].clone();
 
 						entities[id].position_curr = new THREE.Vector3();
 						entities[id].rotation_curr = new THREE.Euler();
