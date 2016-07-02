@@ -38,7 +38,7 @@ function qwtube_init() {
 
 function qwtube_play(url) {
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
 	listener = new THREE.AudioListener();
 
 	scene.add(new THREE.AmbientLight(0xffffff));
