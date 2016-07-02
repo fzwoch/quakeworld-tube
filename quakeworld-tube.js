@@ -228,13 +228,21 @@ function qwtube_load_model(model_name) {
 		return model;
 	}
 
+	if (model_name == "player") {
+		load_count += 142;
+		for (var i = 0; i < 143; i++)
+			model.add(qwtube_load_model("player_" + i));
+		model.name = model_name + ".obj";
+		return model;
+	}
+
 	if (model_name.startsWith("v_")) {
 		mtl_name = model_name;
 		model_name = model_name + "_0";
 	}
 
-	if (model_name == "player") {
-		model_name = model_name + "_0";
+	if (model_name.startsWith("player_")) {
+		mtl_name = "player";
 	}
 
 	var mtl_loader = new THREE.MTLLoader();
@@ -886,7 +894,7 @@ function qwtube_parse_mvd() {
 				baseline[id].team = "";
 				baseline[id].spec = 0;
 
-				entities[id] = baseline[id].clone();
+				entities[id] = baseline[id].children[0].clone();
 
 				entities[id].position_curr = new THREE.Vector3();
 				entities[id].rotation_curr = new THREE.Euler();
