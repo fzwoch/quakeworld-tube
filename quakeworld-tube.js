@@ -1157,6 +1157,16 @@ function qwtube_parse_mvd() {
 					}
 					
 					if (tmp & U_FRAME) {
+						var idx = mvd.getUint8(mvd.offset);
+						var i;
+
+						for (i = 0; i < model_list.length; i++)
+							if (model_list[i] && model_list[i].name == "player.obj")
+								break;
+
+						entities[id].remove(entities[id].children[0])
+						entities[id].add(model_list[i].children[idx].clone());
+
 						mvd.offset++;
 						mvd.msg_size--;
 					}
