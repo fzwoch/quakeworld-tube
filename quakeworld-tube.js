@@ -115,6 +115,8 @@ function qwtube_hover_entities() {
 }
 
 function qwtube_switch_player() {
+	if (camera.intermission)
+		return;
 	for (var i = player_id + 1; i < entities.length; i++) {
 		if (entities[i] && entities[i].is_player) {
 			if (player_id >= 0 && entities[player_id])
