@@ -455,7 +455,16 @@ function qwtube_parse_mvd() {
 			var msg_type = mvd.getUint8(mvd.offset + 1) & 0x07;
 
 			if (render_time == 0 && msg_delta > 0) { // initial mvd info aquired. from here on reading is done by the render loop
-				requestAnimationFrame(qwtube_render);
+				load_count = 1;
+				sound_list[sound_list.length] = qwtube_load_sound("buttons/switch04.wav");
+
+				var interval = setInterval(function() {
+					if (load_count == 0) {
+						clearInterval(interval);
+						requestAnimationFrame(qwtube_render);
+					}
+				}, 100);
+
 				return;
 			}
 
@@ -566,7 +575,19 @@ function qwtube_parse_mvd() {
 				string = flush_string();
 				break;
 			case SVC_STUFFTEXT:
-				flush_string();
+				string = flush_string();
+
+				if (string.startsWith("play ")) {
+					tmp = string.trim().split(" ");
+					for (var i = 1; i < sound_list.length; i++) {
+						if (sound_list[i].name == tmp[1]) {
+							var position = new THREE.Vector3().copy(camera.position);
+							sound_events.push({id: i, time: mvd_time_curr, volume: 1.0, position: position});
+							break;
+						}
+					}
+				}
+
 				break;
 			case SVC_SETANGLE:
 				mvd.offset += 4;
