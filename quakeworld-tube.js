@@ -40,6 +40,7 @@ function qwtube_play(url) {
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
 	listener = new THREE.AudioListener();
+	camera.add(listener);
 
 	scene.add(new THREE.AmbientLight(0xffffff));
 
@@ -180,6 +181,8 @@ function qwtube_render(time) {
 				sound_list[sound.id].isPlaying = false;
 		}
 		sound_list[sound.id].setVolume(sound.volume);
+		sound_list[sound.id].position.copy(sound.position);
+		sound_list[sound.id].updateMatrixWorld();
 		sound_list[sound.id].play();
 	}
 
@@ -270,11 +273,12 @@ function qwtube_load_model(model_name) {
 }
 
 function qwtube_load_sound(sound_name) {
-	var sound = new THREE.Audio(listener);
+	var sound = new THREE.PositionalAudio(listener);
 	var sound_loader = new THREE.AudioLoader();
 	sound_loader.load("sound/" + sound_name, function(buffer) {
 		sound.setBuffer(buffer);
 		sound.name = sound_name;
+		sound.setRefDistance(300);
 		load_count--;
 		console.log("sound loaded: " + sound.name);
 	});
@@ -550,7 +554,7 @@ function qwtube_parse_mvd() {
 				id = (tmp >> 3) & 1023; // entity
 				tmp &= 7; // channel
 
-				sound_events.push({id: sound_id, time: mvd_time_curr, volume: volume});
+				sound_events.push({id: sound_id, time: mvd_time_curr, volume: volume, position: position});
 
 				break;
 			case SVC_PRINT:
@@ -791,8 +795,22 @@ function qwtube_parse_mvd() {
 			case SVC_FOUNDSECRET:
 				break;
 			case SVC_SPAWNSTATICSOUND:
-				mvd.offset += 6;
-				mvd.msg_size -= 6;
+				var position = new THREE.Vector3();
+
+				position.x = mvd.getInt16(mvd.offset, true) / 8;
+
+				mvd.offset += 2;
+				mvd.msg_size -= 2;
+
+				position.y = mvd.getInt16(mvd.offset, true) / 8;
+
+				mvd.offset += 2;
+				mvd.msg_size -= 2;
+
+				position.z = mvd.getInt16(mvd.offset, true) / 8;
+
+				mvd.offset += 2;
+				mvd.msg_size -= 2;
 
 				id = mvd.getUint8(mvd.offset);
 
@@ -802,18 +820,18 @@ function qwtube_parse_mvd() {
 				var volume = mvd.getUint8(mvd.offset) / 255;
 
 				mvd.offset += 2;
-								mvd.msg_size -= 2;
+				mvd.msg_size -= 2;
 
-			//	if (position.distanceTo(camera.position) < 400)
+				if (sound_list[id].isPlaying == true)
 				{
-						if (sound_list[id].isPlaying == true)
-						{
-								sound_list[id].stop();
-								sound_list[id].isPlaying = false;
-						}
-						sound_list[id].setVolume(volume);
-						sound_list[id].play();
+						sound_list[id].stop();
+						sound_list[id].isPlaying = false;
 				}
+				sound_list[id].setVolume(volume);
+				sound_list[id].setLoop(true);
+				sound_list[id].position.copy(position);
+				sound_list[id].updateMatrixWorld();
+				sound_list[id].play();
 				break;
 			case SVC_INTERMISSION:
 				camera.intermission = { position: new THREE.Vector3(), rotation: new THREE.Euler() };
