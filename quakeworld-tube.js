@@ -33,16 +33,6 @@ function qwtube_init() {
 	renderer.setClearColor(0x000000);
 	renderer.clear();
 
-	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
-
-	camera.up = new THREE.Vector3(0, 0, 1);
-	camera.lookAt(new THREE.Vector3(1, 0, 0));
-	camera.offset = new THREE.Euler().copy(camera.rotation);
-
-	listener = new THREE.AudioListener();
-	camera.add(listener);
-
 	window.addEventListener("resize", qwtube_resize);
 	window.addEventListener("click", qwtube_switch_player);
 	window.addEventListener("dragover", qwtube_dragover);
@@ -58,6 +48,15 @@ function qwtube_dragover(evt) {
 function qwtube_play() {
 	scene = new THREE.Scene();
 	scene.add(new THREE.AmbientLight(0xffffff));
+
+	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
+
+	camera.up = new THREE.Vector3(0, 0, 1);
+	camera.lookAt(new THREE.Vector3(1, 0, 0));
+	camera.offset = new THREE.Euler().copy(camera.rotation);
+
+	listener = new THREE.AudioListener();
+	camera.add(listener);
 
 	model_list = [];
 	sound_list = [];
