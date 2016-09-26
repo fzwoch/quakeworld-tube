@@ -31,6 +31,8 @@ function qwtube_init() {
 
 	document.body.appendChild(renderer.domElement);
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x000000);
+	renderer.clear();
 
 	window.addEventListener("resize", qwtube_resize);
 	window.addEventListener("click", qwtube_switch_player);
