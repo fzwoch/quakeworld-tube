@@ -14,15 +14,14 @@ var sound_events;
 var baseline;
 var entities;
 
-var mvd_time_curr = 0;
-var mvd_time_prev = 0;
-var render_time = 0;
-var render_time_offset = -1;
+var mvd_time_curr;
+var mvd_time_prev;
+var render_time;
+var render_time_offset;
 var player_id;
 
-// used to synchronize async loads
-// easiest way to keep things in order
 var load_count;
+var animation_id = 0;
 
 function qwtube_init() {
 	THREE.Euler.DefaultOrder = "ZXY"; // FIXME?
@@ -33,6 +32,16 @@ function qwtube_init() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setClearColor(0x000000);
 	renderer.clear();
+
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
+
+	camera.up = new THREE.Vector3(0, 0, 1);
+	camera.lookAt(new THREE.Vector3(1, 0, 0));
+	camera.offset = new THREE.Euler().copy(camera.rotation);
+
+	listener = new THREE.AudioListener();
+	camera.add(listener);
 
 	window.addEventListener("resize", qwtube_resize);
 	window.addEventListener("click", qwtube_switch_player);
@@ -48,15 +57,7 @@ function qwtube_dragover(evt) {
 
 function qwtube_play() {
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
-	listener = new THREE.AudioListener();
-	camera.add(listener);
-
 	scene.add(new THREE.AmbientLight(0xffffff));
-
-	camera.up = new THREE.Vector3(0, 0, 1);
-	camera.lookAt(new THREE.Vector3(1, 0, 0));
-	camera.offset = new THREE.Euler().copy(camera.rotation);
 
 	model_list = [];
 	sound_list = [];
@@ -64,14 +65,16 @@ function qwtube_play() {
 	baseline = [];
 	entities = [];
 
+	mvd_time_curr = 0;
+	mvd_time_prev = 0;
+	render_time = 0;
+	render_time_offset = -1;
 	player_id = -1;
 
 	qwtube_parse_mvd();
 }
 
 function qwtube_resize() {
-	if (!camera)
-		return;
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 
@@ -128,7 +131,7 @@ function qwtube_hover_entities() {
 }
 
 function qwtube_switch_player() {
-	if (!camera || camera.intermission)
+	if (camera.intermission)
 		return;
 	for (var i = player_id + 1; i < entities.length; i++) {
 		if (entities[i] && entities[i].is_player) {
@@ -151,7 +154,7 @@ function qwtube_switch_player() {
 }
 
 function qwtube_render(time) {
-	requestAnimationFrame(qwtube_render);
+	animation_id = requestAnimationFrame(qwtube_render);
 
 	// for syncing render time to mvd time
 	if (render_time_offset == -1)
@@ -301,6 +304,10 @@ function qwtube_load_sound(sound_name) {
 }
 
 function qwtube_load_mvd(evt) {
+	if (animation_id) {
+		cancelAnimationFrame(animation_id);
+		animation_id = 0;
+	}
 	evt.stopPropagation();
 	evt.preventDefault();
 	var reader = new FileReader();
@@ -451,7 +458,7 @@ function qwtube_parse_mvd() {
 				var interval = setInterval(function() {
 					if (load_count == 0) {
 						clearInterval(interval);
-						requestAnimationFrame(qwtube_render);
+						animation_id = requestAnimationFrame(qwtube_render);
 					}
 				}, 100);
 
