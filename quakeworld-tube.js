@@ -34,7 +34,7 @@ function qwtube_init() {
 
 	window.addEventListener("resize", qwtube_resize);
 	window.addEventListener("click", qwtube_switch_player);
-	window.addEventListener('dragover', qwtube_dragover);
+	window.addEventListener("dragover", qwtube_dragover);
 	window.addEventListener("drop", qwtube_load_mvd);
 }
 
