@@ -68,6 +68,8 @@ function qwtube_play() {
 }
 
 function qwtube_resize() {
+	if (!camera)
+		return;
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 
@@ -124,7 +126,7 @@ function qwtube_hover_entities() {
 }
 
 function qwtube_switch_player() {
-	if (camera.intermission)
+	if (!camera || camera.intermission)
 		return;
 	for (var i = player_id + 1; i < entities.length; i++) {
 		if (entities[i] && entities[i].is_player) {
