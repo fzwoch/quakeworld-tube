@@ -34,9 +34,17 @@ function qwtube_init() {
 
 	window.addEventListener("resize", qwtube_resize);
 	window.addEventListener("click", qwtube_switch_player);
+	window.addEventListener('dragover', qwtube_dragover);
+	window.addEventListener("drop", qwtube_load_mvd);
 }
 
-function qwtube_play(url) {
+function qwtube_dragover(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+	evt.dataTransfer.dropEffect = 'copy';
+}
+
+function qwtube_play() {
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 1, 2000);
 	listener = new THREE.AudioListener();
@@ -56,7 +64,7 @@ function qwtube_play(url) {
 
 	player_id = -1;
 
-	qwtube_load_mvd(url);
+	setTimeout(qwtube_parse_mvd());
 }
 
 function qwtube_resize() {
@@ -288,41 +296,19 @@ function qwtube_load_sound(sound_name) {
 	return sound;
 }
 
-function qwtube_load_mvd(url) {
-	var req = new XMLHttpRequest();
-	req.open("GET", url);
-	req.responseType = "arraybuffer";
-	req.onload = function(event) {
-		mvd = new DataView(req.response);
-		mvd.size = req.response.byteLength;
+function qwtube_load_mvd(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+	var reader = new FileReader();
+	reader.onload = function(event) {
+		mvd = new DataView(event.target.result);
+		mvd.size = event.total;
 		mvd.offset = 0;
 		mvd.msg_size = 0;
 		console.log("mvd loaded: " + mvd.size + " bytes");
-		setTimeout(qwtube_parse_mvd());
+		qwtube_play();
 	};
-	req.send();
-	return; // below is cooler fetch API; waiting for universal browser support
-	fetch(url).then(function(response) {
-		var reader = response.body.getReader();
-		var buf = new Uint8Array(response.headers.get("content-length"));
-		mvd = new DataView(buf.buffer);
-		mvd.size = 0;
-		mvd.offset = 0;
-		mvd.msg_size = 0;
-		function download() {
-			return reader.read().then(function(result) {
-				if (result.done) {
-					console.log("mvd loaded: " + mvd.size + " bytes");
-					setTimeout(qwtube_parse_mvd()); // FIXME
-					return;
-				}
-				buf.set(result.value, mvd.size);
-				mvd.size += result.value.length;
-				return download();
-			});
-		}
-		return download();
-	});
+	reader.readAsArrayBuffer(evt.dataTransfer.files[0]);
 }
 
 function flush_string() {
