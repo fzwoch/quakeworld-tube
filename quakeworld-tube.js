@@ -64,7 +64,7 @@ function qwtube_play() {
 
 	player_id = -1;
 
-	setTimeout(qwtube_parse_mvd());
+	qwtube_parse_mvd();
 }
 
 function qwtube_resize() {
