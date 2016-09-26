@@ -41,7 +41,7 @@ function qwtube_init() {
 function qwtube_dragover(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
-	evt.dataTransfer.dropEffect = 'copy';
+	evt.dataTransfer.dropEffect = "copy";
 }
 
 function qwtube_play() {
