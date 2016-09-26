@@ -96,26 +96,26 @@ function qwtube_lerp_entities()
 function qwtube_hover_entities() {
 	entities.forEach(function(object) {
 		switch (object.name) {
-			case "armor.obj":
-			case "backpack.obj":
-			case "end1.obj":
-			case "end2.obj":
-			case "end3.obj":
-			case "end4.obj":
-			case "g_light.obj":
-			case "g_nail.obj":
-			case "g_nail2.obj":
-			case "g_rock.obj":
-			case "g_rock2.obj":
-			case "g_shot.obj":
-			case "invisibl.obj":
-			case "invulner.obj":
-			case "m_g_key.obj":
-			case "m_s_key.obj":
-			case "quaddama.obj":
-			case "suit.obj":
-			case "w_g_key.obj":
-			case "w_s_key.obj":
+			case "armor":
+			case "backpack":
+			case "end1":
+			case "end2":
+			case "end3":
+			case "end4":
+			case "g_light":
+			case "g_nail":
+			case "g_nail2":
+			case "g_rock":
+			case "g_rock2":
+			case "g_shot":
+			case "invisibl":
+			case "invulner":
+			case "m_g_key":
+			case "m_s_key":
+			case "quaddama":
+			case "suit":
+			case "w_g_key":
+			case "w_s_key":
 				object.rotation.z += render_time * 0.002;
 				object.position.z += 5 * Math.sin(render_time * 0.004);
 			default:
@@ -217,7 +217,7 @@ function qwtube_load_map(map_name) {
 			console.log("map loaded: " + map.name);
 		});
 	});
-	map.name = map_name + ".obj";
+	map.name = map_name;
 	return map;
 }
 
@@ -243,7 +243,7 @@ function qwtube_load_model(model_name) {
 		model.add(qwtube_load_model("armor_0"));
 		model.add(qwtube_load_model("armor_1"));
 		model.add(qwtube_load_model("armor_2"));
-		model.name = model_name + ".obj";
+		model.name = model_name;
 		return model;
 	}
 
@@ -251,7 +251,7 @@ function qwtube_load_model(model_name) {
 		load_count += 142;
 		for (var i = 0; i < 143; i++)
 			model.add(qwtube_load_model("player_" + i));
-		model.name = model_name + ".obj";
+		model.name = model_name;
 		return model;
 	}
 
@@ -276,7 +276,7 @@ function qwtube_load_model(model_name) {
 			console.log("model loaded: " + model.name);
 		});
 	});
-	model.name = model_name + ".obj";
+	model.name = model_name;
 	return model;
 }
 
@@ -682,9 +682,9 @@ function qwtube_parse_mvd() {
 				if (id == 0) {
 					baseline[id] = model_list[tmp];
 					scene.add(model_list[tmp]);
-				} else if (model_list[tmp].name == "armor.obj") {
+				} else if (model_list[tmp].name == "armor") {
 					baseline[id] = model_list[tmp].children[skin].clone();
-					baseline[id].name = "armor.obj";
+					baseline[id].name = "armor";
 				} else {
 					baseline[id] = model_list[tmp].clone();
 				}
@@ -1188,7 +1188,7 @@ function qwtube_parse_mvd() {
 						var i;
 
 						for (i = 0; i < model_list.length; i++)
-							if (model_list[i] && model_list[i].name == "player.obj")
+							if (model_list[i] && model_list[i].name == "player")
 								break;
 
 						entities[id].remove(entities[id].children[0])
