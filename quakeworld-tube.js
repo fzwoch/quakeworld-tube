@@ -79,6 +79,7 @@ function qwtube_resize() {
 	camera.updateProjectionMatrix();
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.clear();
 }
 
 function qwtube_lerp_entities()
