@@ -192,7 +192,7 @@ function qwtube_render(time) {
 	renderer.render(scene, camera);
 
 	while (sound_events.length && render_time >= sound_events[0].time) {
-		sound = sound_events.pop();
+		sound = sound_events.shift();
 		if (sound_list[sound.id].isPlaying == true) {
 				sound_list[sound.id].stop();
 				sound_list[sound.id].isPlaying = false;
