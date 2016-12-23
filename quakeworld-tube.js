@@ -208,31 +208,26 @@ function qwtube_render(time) {
 }
 
 function qwtube_load_map(map_name) {
-	var mtl_name = map_name;
 	if (map_name.charAt(0) == "*") {
-		mtl_name = mvd.map_name;
 		map_name = mvd.map_name + "_" + map_name.substring(1);
 	}
 	var map = new THREE.Group();
-	var mtl_loader = new THREE.MTLLoader();
-	mtl_loader.setTexturePath("maps/");
-	mtl_loader.load("maps/" + mtl_name + ".mtl", function(materials) {
-		materials.preload();
-		var obj_loader = new THREE.OBJLoader();
-		obj_loader.setMaterials(materials);
-		obj_loader.load("maps/" + map_name + ".obj", function(object) {
-			map.add(object);
-			load_count--;
-			console.log("map loaded: " + map.name);
-		});
-	});
 	map.name = map_name;
+
+	var loader = new THREE.JSONLoader();
+	loader.load("maps/" + map_name + ".json", function(geometry, materials) {
+		var material = new THREE.MultiMaterial(materials);
+		var object = new THREE.Mesh(geometry, material);
+		map.add(object);
+		load_count--;
+		console.log("map loaded: " + map.name);
+	});
 	return map;
 }
 
 function qwtube_load_model(model_name) {
-	var mtl_name = model_name;
 	var model = new THREE.Group();
+	model.name = model_name;
 
 	switch (model_name) {
 		case "s_bubble":
@@ -240,6 +235,9 @@ function qwtube_load_model(model_name) {
 		case "wizard":
 		case "flame2":
 		case "v_spike":
+		case "zombie":
+		case "laser":
+		case "v_axe":
 			model.add(new THREE.Mesh(new THREE.BoxGeometry(28, 28, 28), new THREE.MeshNormalMaterial()));
 			load_count--;
 			return model;
@@ -252,40 +250,17 @@ function qwtube_load_model(model_name) {
 		model.add(qwtube_load_model("armor_0"));
 		model.add(qwtube_load_model("armor_1"));
 		model.add(qwtube_load_model("armor_2"));
-		model.name = model_name;
 		return model;
 	}
 
-	if (model_name == "player") {
-		load_count += 142;
-		for (var i = 0; i < 143; i++)
-			model.add(qwtube_load_model("player_" + i));
-		model.name = model_name;
-		return model;
-	}
-
-	if (model_name.startsWith("v_")) {
-		mtl_name = model_name;
-		model_name = model_name + "_0";
-	}
-
-	if (model_name.startsWith("player_")) {
-		mtl_name = "player";
-	}
-
-	var mtl_loader = new THREE.MTLLoader();
-	mtl_loader.setTexturePath("models/");
-	mtl_loader.load("models/" + mtl_name + ".mtl", function(materials) {
-		materials.preload();
-		var obj_loader = new THREE.OBJLoader();
-		obj_loader.setMaterials(materials);
-		obj_loader.load("models/" + model_name + ".obj", function(object) {
-			model.add(object);
-			load_count--;
-			console.log("model loaded: " + model.name);
-		});
+	var loader = new THREE.JSONLoader();
+	loader.load("models/" + model_name + ".json", function(geometry, materials) {
+		var material = new THREE.MultiMaterial(materials);
+		var object = new THREE.Mesh(geometry, material);
+		model.add(object);
+		load_count--;
+		console.log("model loaded: " + model.name);
 	});
-	model.name = model_name;
 	return model;
 }
 
@@ -1198,14 +1173,14 @@ function qwtube_parse_mvd() {
 					
 					if (tmp & U_FRAME) {
 						var idx = mvd.getUint8(mvd.offset);
-						var i;
+						// var i;
 
-						for (i = 0; i < model_list.length; i++)
-							if (model_list[i] && model_list[i].name == "player")
-								break;
+						// for (i = 0; i < model_list.length; i++)
+						// 	if (model_list[i] && model_list[i].name == "player")
+						// 		break;
 
-						entities[id].remove(entities[id].children[0])
-						entities[id].add(model_list[i].children[idx].clone());
+						// entities[id].remove(entities[id].children[0])
+						// entities[id].add(model_list[i].children[idx].clone());
 
 						mvd.offset++;
 						mvd.msg_size--;
