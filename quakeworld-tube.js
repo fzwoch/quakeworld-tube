@@ -1280,8 +1280,8 @@ function qwtube_parse_mvd() {
 			case SVC_NAILS2:
 				tmp = mvd.getUint8(mvd.offset);
 				
-				mvd.offset += 7 * tmp;
-				mvd.msg_size -= 7 * tmp;
+				mvd.offset += 7 * tmp + 1;
+				mvd.msg_size -= 7 * tmp + 1;
 				break;
 			default:
 				console.log("mvd parse error");
